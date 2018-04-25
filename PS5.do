@@ -196,6 +196,13 @@ foreach i of varlist crimerate-whitecollar {
 	pause
 }
 
+**Estimates for manual calculation (RF/FS) and IV are the same as.
+
+**The IV TOT estimate (.00267) is roughly the same as the OLS estimate (.00226).
+**This is likely because eligibility is such a good predictor of conscription.
+**Because the FS estimate is so close to 1, the scaled IV estimate are close to 
+**original OLS estimate.
+
 ********************************************************************************
 **                                   P8                                       **
 ********************************************************************************
