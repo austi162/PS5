@@ -137,13 +137,20 @@ pause
 **Initial regression with birth year fixed effects.
 reg conscripted cutoff i.birthyr argentine indigenous, r
 
-**The results show that you are 65.8 percentage points more likely to conscript if
-**you were eligible. This satisfies the first IV assumption; 1. eligibility 
-**correlates with conscription. cov(zi, xi) != 0.
+**The results show that you are 65.8 percentage points more likely to conscript 
+**if you were eligible at the 99% CI. This satisfies the first IV assumption; 
+**eligibility correlates with conscription. cov(zi, xi) != 0. 
+
+**I did not run partial F-test for IV valudity check, but I would expect all to 
+**be > 10.
 
 **Yes, you should include birth year fixed effects. We will need that control for
 **the second stage regression. If there is regression to the mean as you get older,
-**we will want to look at how crime rate changes within each age cohort.
+**we will want to look at how specific crime rate changes within each age cohort.
+
+**Alternatively, there may have been country-wide shocks that only affected one
+**cohort and not others, like a new abortion law or increase in access to prenatal
+**services.
 
 **Yes, you should look at ethnic composition as well, in case certain groups are
 **more or less likely to conscribe than others. Citizenship should not be included
