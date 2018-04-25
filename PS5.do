@@ -214,6 +214,8 @@ foreach i of varlist crimerate-whitecollar {
 **2. eligibility is uncorrelated with ei; it only affects y_i through conscription
 **cov(zi, ei) = 0.
 
+pause
+
 ********************************************************************************
 **                                   P9                                       **
 ********************************************************************************
