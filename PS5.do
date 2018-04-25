@@ -235,6 +235,15 @@ pause
 //effect does it estimate? Is it reasonable to call it a local average treatment 
 //effect? Is it reasonable to call it a treatment-on-thetreated effect?
 
+**The ATE looks at the average effect for those who conscript in Argentina.
+
+**It is reasonable to call it the TOT; ITT scaled by compliance rate (prediction 
+**conscription conditional on mandatory enrollment). It is not reasonable to 
+**call it LATE, unless you assume no always takers. Because others who did not
+**have their number drawn are not precluded from enrolling, then we consider the
+**possibility of always takers and think it would be more reasonable to conclude
+**the IV effect is TOT.
+
 pause 
 
 ********************************************************************************
@@ -250,3 +259,9 @@ pause
 //this distinction affect whether we can use the estimate from Argentina to predict 
 //the effect of the repeal of the draft in Israel?
 
+**Given this, we assume low rates of always takers in Argentina and high for Israel.
+
+**If eagerness to conscribe is correlated with the likelihood that you will
+**committ a crime, then the results from Argentina will not be applicable to
+**Israel. Moving to eligibility will systematically draw those eager to enroll, 
+**which will therefore lead to increase in crime.
