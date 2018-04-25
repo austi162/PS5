@@ -84,7 +84,7 @@ pause
 **OLS with background characteristics and birthyear fixed effects.
 
 foreach i of varlist crimerate-whitecollar {
-	reg `i' conscripted i.birthyr argentine indigenous, r
+	reg `i' conscripted argentine indigenous naturalized i.birthyr, r
 	pause 
 	}
 
@@ -135,26 +135,26 @@ pause
 //effects? Do you need to control for ethnic composition?
 
 **Initial regression with birth year fixed effects.
-reg conscripted cutoff i.birthyr argentine indigenous, r
+reg conscripted cutoff argentine indigenous naturalized i.birthyr, r
 
 **The results show that you are 65.8 percentage points more likely to conscript 
-**if you were eligible at the 99% CI. This satisfies the first IV assumption; 
+**if you were eligible at the 99% CI. This satisfies the relevance assumption; 
 **eligibility correlates with conscription. cov(zi, xi) != 0. 
 
-**I did not run partial F-test for IV valudity check, but I would expect all to 
-**be > 10.
-
-**Yes, you should include birth year fixed effects. We will need that control for
-**the second stage regression. If there is regression to the mean as you get older,
-**we will want to look at how specific crime rate changes within each age cohort.
+**Yes, you should include birth year fixed effects if we decide to include it in
+**our second stage regression (I did). If there is regression to the mean as you 
+**get older, we will want to look at how specific crime rate changes within each 
+**age cohort.
 
 **Alternatively, there may have been country-wide shocks that only affected one
-**cohort and not others, like a new abortion law or increase in access to prenatal
-**services.
+**cohort and not others, like a new abortion law, increase in access to prenatal
+**services, a war that only a subset of birth cohorts faught in.
 
 **Yes, you should look at ethnic composition as well, in case certain groups are
-**more or less likely to conscribe than others. Citizenship should not be included
-**in case you were more likely to become naturalized after conscription.
+**more or less likely to conscribe than others. Citizenship should also be included,
+**assuming you could not be draft eligible if you were not a citizen, i.e., we are
+**sure citizenship status was assigned before the lottery and not after; and if
+*the latter, you were not more likely to become naturalized after conscription.
 
 pause
 
@@ -166,18 +166,18 @@ pause
 //Do these results reflect causal effects of conscription?
 
 foreach i of varlist crimerate-whitecollar {
-	qui reg conscripted cutoff i.birthyr argentine indigenous
+	qui reg conscripted cutoff argentine indigenous naturalized i.birthyr 
 	estimates store first_stage
-	qui reg `i' cutoff i.birthyr argentine indigenous
+	qui reg `i' cutoff argentine indigenous naturalized i.birthyr 
 	estimates store reduced_form
 	suest first_stage reduced_form, r
 	nlcom [reduced_form_mean]cutoff/[first_stage_mean]cutoff
 	pause
 }
 
-**Yes, the reduced form represents causal effect that conscription has on crimerate,
-**which is the Intent to Treat (ITT). In Question 6, we will scale ITT by the
-**first stage results to get our TOT effect.
+**Yes, the reduced form represents causal average treatment effect that conscription 
+**has on crime rate. In Question 6, we will scale RF by the first stage results 
+**to get the LATE.
 
 
 ********************************************************************************
@@ -199,13 +199,13 @@ pause
 //Why or why not?
 
 foreach i of varlist crimerate-whitecollar {
-	ivregress 2sls `i' (conscripted=cutoff) i.birthyr argentine indigenous,r first
+	ivregress 2sls `i' (conscripted=cutoff) argentine indigenous naturalized i.birthyr, r first
 	pause
 }
 
 **Estimates for manual calculation (RF/FS) and IV are the same as.
 
-**The IV TOT estimate (.00267) is roughly the same as the OLS estimate (.00226).
+**The IV LATE estimate (.00267) is roughly the same as the OLS estimate (.00226).
 **This is likely because eligibility is such a good predictor of conscription.
 **Because the FS estimate is so close to 1, the scaled IV estimate are close to 
 **original OLS estimate.
@@ -217,15 +217,34 @@ foreach i of varlist crimerate-whitecollar {
 //assess the validity of eligibility as an instrument for conscription. Does it 
 //satisfy all the criteria for a valid instrument?
 
-**We want to show that eligibility is not correlated with background characteristics.
-**If they are, then eligibility was not randomly assigned and therefore there may 
-**still be OVB.
-
 **Assumptions: 
-**1. eligibility correlates with conscription. cov(zi, xi) != 0
-**2. eligibility is uncorrelated with ei; it only affects y_i through conscription
-**cov(zi, ei) = 0.
+*1. Relevance. Eligibility must correlate with conscription. cov(zi, xi) != 0
+*2. Exogeneity: eligibility is uncorrelated with ei; it only affects y_i through 
+*conscription cov(zi, ei) = 0.
 
+**1. We have already confirmed the relevance assumption in Question 4.
+
+**2. For an unbiased IV estimation, the instrument must be exogenous. Eligibility
+**can only affect the outcome through treatment. Although this is not testable,
+**we can at least show that draft eligibility is not correlated with background 
+**characteristics. If they are, then eligibility was not randomly assigned and 
+**therefore there may still be OVB.
+
+*Individual t-tests on background characteristics
+foreach i in argentine indigenous naturalized {
+	ttest `i', by(cutoff)
+	pause
+}
+
+*Joint F-test in case eligibility is jointly correlated with background characteristics.
+reg conscripted cutoff argentine indigenous naturalized i.birthyr, r
+test argentine indigenous naturalized
+
+**We cannot reject any t-tests or joint F-test, so it is likely that conscription
+**is a valid instrument.
+
+**Because we meet both assumptions, we can reasonably conclude the cutoff is a 
+**valid instrument.
 pause
 
 ********************************************************************************
@@ -235,14 +254,20 @@ pause
 //effect does it estimate? Is it reasonable to call it a local average treatment 
 //effect? Is it reasonable to call it a treatment-on-thetreated effect?
 
-**The ATE looks at the average effect for those who conscript in Argentina.
+**The treatment looks at the average effect of those eligible for conscription in 
+**Argentina. We cannot conclude that that this is the ATE if there is heterogeneous 
+**effects; or rather, if the effect is not uniform across all enrolees. 
 
-**It is reasonable to call it the TOT; ITT scaled by compliance rate (prediction 
+**That said, LATE is the average effect among individuals who were induced to 
+**conscribe as a result of being draft eligible due to their specific randomly
+**assigned lottery outcome and cutoff point.
+
+**It is reasonable to call our effect the LATE; RF scaled by FS estimate (prediction 
 **conscription conditional on mandatory enrollment). It is not reasonable to 
-**call it LATE, unless you assume no always takers. Because others who did not
-**have their number drawn are not precluded from enrolling, then we consider the
-**possibility of always takers and think it would be more reasonable to conclude
-**the IV effect is TOT.
+**call it TOT, unless you assume no always takers. Because we know that others 
+**who did not have their number drawn still enrolled, then we know that there is
+**the possibility of always takers and think it would be more reasonable to 
+**conclude the IV effect as the LATE.
 
 pause 
 
@@ -259,9 +284,13 @@ pause
 //this distinction affect whether we can use the estimate from Argentina to predict 
 //the effect of the repeal of the draft in Israel?
 
-**Given this, we assume low rates of always takers in Argentina and high for Israel.
+**No. If we are assuming that in all other aspects that Israel is similar to the
+**cohort studied in Argentina (faught in as many similar wars as Arganinian vets,
+**trained in a similar manner, etc.), AND we assume eligibility is still randomly
+**assigned, then we would not expect to see a difference among eligibles.
 
-**If eagerness to conscribe is correlated with the likelihood that you will
-**committ a crime, then the results from Argentina will not be applicable to
-**Israel. Moving to eligibility will systematically draw those eager to enroll, 
-**which will therefore lead to increase in crime.
+**That said, if this study were done in Israel instead, and again all else equal,
+**we would expect there to be more always takers. In which case eligibility would
+**be a poorer predicter of conscription. This would increase the scaled RF effect
+**of eligibility on crime rate. Which would mean that crime rate in Israel, would
+**be higher among eligibles compared to Argentina eligibles, all else constant.
