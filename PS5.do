@@ -26,9 +26,8 @@ ssc install outreg2
 ssc install mdesc
 
 **Housekeeping
-
 label variable birthyr "Birth year"
-label variable draftnumber "Draft number (1-1000)
+label variable draftnumber "Draft number (1-1000)"
 label variable conscripted "Fraction conscripted"
 label variable crimerate "Fraction with criminal record by 2005"
 label variable property "Fraction with property crime conviction in 2000-2005"
@@ -95,8 +94,7 @@ foreach i of varlist crimerate-whitecollar {
 **But OLS estimates are likely biased. We are ignoring confounding variables that
 **are correlated with conscription and crimerates. As a result, we are likely 
 **biasing our results. Such omitted variables may be: whether the conscriptee
-**likes office work, or being conscripted is correlated with shorter life-spans,
-**which may bias our results.
+**are more agressive, or being conscripted is correlated with shorter life-spans.
 
 **If conscription is correlated with shorter lifespans, this may bias our results.
 **Because crime rates don't start until 2000, and assuming the men had to be 18
