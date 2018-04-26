@@ -218,8 +218,8 @@ foreach i of varlist crimerate-whitecollar {
 //satisfy all the criteria for a valid instrument?
 
 **Assumptions: 
-*1. Relevance. Eligibility must correlate with conscription. cov(zi, xi) != 0
-*2. Exogeneity: eligibility is uncorrelated with ei; it only affects y_i through 
+*1. Relevance: Eligibility must correlate with conscription. cov(zi, xi) != 0
+*2. Exogeneity: Eligibility is uncorrelated with ei; it only affects y_i through 
 *conscription cov(zi, ei) = 0.
 
 **1. We have already confirmed the relevance assumption in Question 4.
@@ -240,11 +240,12 @@ foreach i in argentine indigenous naturalized {
 reg conscripted cutoff argentine indigenous naturalized i.birthyr, r
 test argentine indigenous naturalized
 
-**We cannot reject any t-tests or joint F-test, so it is likely that conscription
+**We cannot reject any t-tests or joint F-test, so it is likely that eligibility
+**is exogenous.
+
+**Because we meet both assumptions, we can reasonably conclude that eligibility 
 **is a valid instrument.
 
-**Because we meet both assumptions, we can reasonably conclude the cutoff is a 
-**valid instrument.
 pause
 
 ********************************************************************************
